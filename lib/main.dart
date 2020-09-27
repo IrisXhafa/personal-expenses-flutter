@@ -96,6 +96,44 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  List<Widget> _buildLandscapeWidgets(
+      AppBar appBar, Widget transactionListWidget) {
+    return [
+      Switch(
+          value: _showChart,
+          onChanged: (val) {
+            setState(() {
+              _showChart = val;
+            });
+          }),
+      _showChart
+          ? Container(
+              padding: EdgeInsets.all(10),
+              height: (MediaQuery.of(context).size.height -
+                      appBar.preferredSize.height -
+                      MediaQuery.of(context).padding.top) *
+                  0.7,
+              child: Chart(this._recentTransactions),
+            )
+          : transactionListWidget
+    ];
+  }
+
+  List<Widget> _buildPortraitWidgeds(
+      AppBar appBar, Widget transactionListWidget) {
+    return [
+      Container(
+        padding: EdgeInsets.all(10),
+        height: (MediaQuery.of(context).size.height -
+                appBar.preferredSize.height -
+                MediaQuery.of(context).padding.top) *
+            0.3,
+        child: Chart(this._recentTransactions),
+      ),
+      transactionListWidget
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     var appBar = AppBar(
@@ -121,34 +159,9 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: appBar,
       body: Column(children: [
         if (!isLandscape)
-          Container(
-            padding: EdgeInsets.all(10),
-            height: (MediaQuery.of(context).size.height -
-                    appBar.preferredSize.height -
-                    MediaQuery.of(context).padding.top) *
-                0.3,
-            child: Chart(this._recentTransactions),
-          ),
-        if (!isLandscape) transactionListWidget,
+          ..._buildPortraitWidgeds(appBar, transactionListWidget),
         if (isLandscape)
-          Switch(
-              value: _showChart,
-              onChanged: (val) {
-                setState(() {
-                  _showChart = val;
-                });
-              }),
-        if (isLandscape)
-          _showChart
-              ? Container(
-                  padding: EdgeInsets.all(10),
-                  height: (MediaQuery.of(context).size.height -
-                          appBar.preferredSize.height -
-                          MediaQuery.of(context).padding.top) *
-                      0.7,
-                  child: Chart(this._recentTransactions),
-                )
-              : transactionListWidget
+          ..._buildLandscapeWidgets(appBar, transactionListWidget)
       ]),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
